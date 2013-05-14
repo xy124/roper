@@ -12,6 +12,9 @@ import javax.imageio.ImageIO;
 
 public class Game extends Frame implements IGameObject, Runnable  {
 
+	private Image dbImage;
+	private Graphics dbg;
+	
 	Image worldimg;
 	
 	int tim = 0;
@@ -23,10 +26,6 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		} catch (IOException e) {
 		}
 		
-		if (dbImage == null) {
-	    	dbImage = createImage (this.getSize().width, this.getSize().height);
-	    	dbg = dbImage.getGraphics ();
-	    }
 		
 		started = false;
 		setSize(640,480);
@@ -41,22 +40,30 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		// Erniedrigen der ThreadPriority
 	      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);	      
 	      // Solange true ist läuft der Thread weiter
-	      while (started) {	    	  	
-	            update();
-	      } 
+	  
 	      
-	      
-	   // Schaffen eines neuen Threads, in dem das Spiel läuft	
+	    
+		if (dbImage == null) {
+	    	dbImage = createImage (this.getSize().width, this.getSize().height);
+	    	
+	    	dbg = dbImage.getGraphics ();
+	    }
+	    
+		// Schaffen eines neuen Threads, in dem das Spiel läuft	
 		Thread th = new Thread(this);
-		
+			
 		// Starten des Threads
 		th.start();
+		
+
+	
 	}
 
 	
 	
 	@Override
 	public void update() {
+		
 		//TODO call update of members.,...
 		// Neuzeichnen des Applets
         repaint();
@@ -96,13 +103,14 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		 while (started) {	    	  	
+	          update();
+	    } 
 	}
 	
 	/**Doppelpufferung**/
 	// Definition zweier Instanzvariablen für die Doppelpufferung im Kopf des Programmes
-	private Image dbImage;
-	private Graphics dbg;
+	
 	/** Update - Methode, Realisierung der Doppelpufferung zur Reduzierung des Bildschirmflackerns */
 	public void update (Graphics g)	{	      
 	      // Bildschirm im Hintergrund löschen
