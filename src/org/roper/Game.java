@@ -17,6 +17,8 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	
 	Image worldimg;
 	
+	World world;
+	
 	int tim = 0;
 	boolean started;
 	@Override
@@ -43,6 +45,9 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	  
 	      
 	    
+	      world = new World();
+	      world.init();
+	      
 		if (dbImage == null) {
 	    	dbImage = createImage (this.getSize().width, this.getSize().height);
 	    	
@@ -73,7 +78,7 @@ public class Game extends Frame implements IGameObject, Runnable  {
         try {
               // Stoppen des Threads für in Klammern angegebene Millisekunden
               Thread.sleep (20);
-        } catch (InterruptedException ex){}	            
+        } catch (InterruptedException ex) {}	            
 
         // Zurücksetzen der ThreadPriority auf Maximalwert
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
@@ -128,8 +133,13 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	public void paint (Graphics g) {		
 		
 		g.drawString("Punkte: ", 100, 100);
-		g.drawString("Zeit: "+" von 2250", 0, 20);
-		g.drawImage(worldimg, 0, 0, worldimg.getHeight(this), worldimg.getWidth(this), this);
+		//draw background....
+		g.drawImage(worldimg, 0, 0, this);
+		
+		for (Sprite i: world.sprites) {
+			
+			g.drawImage(i.img, (int) i.pos.x, (int) i.pos.y, this);			
+		}
 	}
 	
 }

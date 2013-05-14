@@ -1,11 +1,17 @@
 package org.roper;
 
+import java.awt.Image;
+import java.util.ArrayList;
+
 public class World implements IGameObject {
+	
+	ArrayList<Sprite> sprites;
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
 		
+		///all these will be drawn in game's paint()
+		sprites = new ArrayList<Sprite>();
 	}
 
 	@Override
