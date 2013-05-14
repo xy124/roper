@@ -5,26 +5,76 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Game extends Frame implements IGameObject, Runnable  {
 
+	Image worldimg;
 	
-	
+	int tim = 0;
+	boolean started;
 	@Override
 	public void init() {
+		try {
+		    worldimg = ImageIO.read(new File("share/bild.jpg"));
+		} catch (IOException e) {
+		}
 		
-		setSize(800,800);
+		if (dbImage == null) {
+	    	dbImage = createImage (this.getSize().width, this.getSize().height);
+	    	dbg = dbImage.getGraphics ();
+	    }
+		
+		started = false;
+		setSize(640,480);
 		setVisible(true);
 		addWindowListener(new WindowAdapter() {
 			  public void windowClosing(WindowEvent we) {
 			    System.exit(0);
 			  }
 			});
+		started = true;
+		
+		// Erniedrigen der ThreadPriority
+	      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);	      
+	      // Solange true ist läuft der Thread weiter
+	      while (started) {	    	  	
+	            update();
+	      } 
+	      
+	      
+	   // Schaffen eines neuen Threads, in dem das Spiel läuft	
+		Thread th = new Thread(this);
+		
+		// Starten des Threads
+		th.start();
 	}
 
+	
+	
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		//TODO call update of members.,...
+		// Neuzeichnen des Applets
+        repaint();
+  
+        
+
+        try {
+              // Stoppen des Threads für in Klammern angegebene Millisekunden
+              Thread.sleep (20);
+        } catch (InterruptedException ex){}	            
+
+        // Zurücksetzen der ThreadPriority auf Maximalwert
+        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+        tim++;
+        if(tim>2250){
+        	started = false;
+        	
+        }
 
 	}
 
@@ -71,7 +121,7 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		
 		g.drawString("Punkte: ", 100, 100);
 		g.drawString("Zeit: "+" von 2250", 0, 20);
-		//g.drawString("HZ: "+flyingbirds, 0, 50);
+		g.drawImage(worldimg, 0, 0, worldimg.getHeight(this), worldimg.getWidth(this), this);
 	}
 	
 }
