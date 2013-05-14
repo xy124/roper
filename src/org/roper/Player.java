@@ -12,8 +12,11 @@ public class Player implements IGameObject {
 	Vec pos;
 	Vec dPos;
 	
-	public Player() {
+	World world;
+	
+	public Player(World world) {
 		sprite = null;
+		this.world = world;
 	}
 	
 	@Override
@@ -22,9 +25,15 @@ public class Player implements IGameObject {
 		dPos = new Vec();
 		
 		try {
-		    sprite = ImageIO.read(new File("share/bild.jpg"));
+		    sprite = ImageIO.read(new File("share/bild2.jpg"));
 		} catch (IOException e) {
 		}
+		
+		world.sprites.add(new Sprite(sprite, pos)); 
+		//hope pos is called by referenze, but it should :)
+		
+		
+		
 	}
 
 	@Override

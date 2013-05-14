@@ -12,6 +12,9 @@ import javax.imageio.ImageIO;
 
 public class Game extends Frame implements IGameObject, Runnable  {
 
+	
+	Player player; //todo clean this stuff up... make it private, user getters and setters...
+	
 	private Image dbImage;
 	private Graphics dbg;
 	
@@ -30,7 +33,7 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		
 		
 		started = false;
-		setSize(640,480);
+		setSize(640, 480);
 		setVisible(true);
 		addWindowListener(new WindowAdapter() {
 			  public void windowClosing(WindowEvent we) {
@@ -47,6 +50,9 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	    
 	      world = new World();
 	      world.init();
+	      
+	      player = new Player(world);
+	      player.init();
 	      
 		if (dbImage == null) {
 	    	dbImage = createImage (this.getSize().width, this.getSize().height);
