@@ -8,7 +8,7 @@ import java.awt.event.KeyListener;
 public class Player implements IGameObject, KeyListener {
 	final float MSPEED  = 5.0f;
 	final float GRAVITY = 1.0f;
-	final float JSPEED  = -9.0f;
+	final float JSPEED  = -15.0f;
 	
 	
 	Vec pos;
@@ -72,8 +72,8 @@ public class Player implements IGameObject, KeyListener {
 				notThereYet = false;	
 		}
 		
-		if (colliding) 
-			dPos.reset();
+		//if (colliding) 
+			//pos = pos.add(NdPos.multiply(-3));
 		
 
 		sprite.pos = pos;
@@ -81,8 +81,8 @@ public class Player implements IGameObject, KeyListener {
 
 	private boolean isCollission(Vec pos) {
 		//check bordercollission:
-		return ( (pos.x+sprite.getWidth() > parent.getWidth()) || (pos.x < 0)
-				|| (pos.y+sprite.getHeight() > parent.getHeight()) || (pos.y < 0) );
+		return ( (pos.x+sprite.getWidth() >= parent.getWidth()) || (pos.x <= 0)
+				|| (pos.y+sprite.getHeight() >= parent.getHeight()) || (pos.y <= 0) );
 		
 		
 	}

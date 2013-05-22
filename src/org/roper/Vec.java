@@ -55,6 +55,13 @@ public class Vec {
 		
 	}
 
+	public Vec multiply(float f) {
+		Vec res = new Vec(this);
+		res.x *= f;
+		res.y *= f;
+		return res;		
+	}
+
 	
 	
 }
