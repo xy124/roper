@@ -37,4 +37,12 @@ public class Sprite {
 		return img;
 	}
 
+	public float getWidth() {		
+		return img.getWidth(null);
+	}
+	
+	public float getHeight() {
+		return img.getHeight(null);
+	}
+
 }

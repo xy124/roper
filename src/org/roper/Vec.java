@@ -13,10 +13,48 @@ public class Vec {
 		y = 0;
 	}
 
-	public void add(Vec dPos) {
-		x += dPos.x;
-		y += dPos.y;
+	public Vec(Vec pos) {
+		this.x = pos.x;
+		this.y = pos.y;
+	}
+
+	public Vec add(Vec dPos) {
+		Vec res = new Vec(this);
+		res.x += dPos.x;
+		res.y += dPos.y;
+		
+		return res;
 		
 	}
+	
+	public float abs() {
+		return (float) Math.pow((x*x+y*y), 0.5);
+	}
+
+	public Vec normalize() {
+		float n = abs(); 
+		Vec res = new Vec(x/n, y/n);
+		return res;
+	}
+
+	public boolean equals(Vec p, float tollerance) {	
+		return (p.x+tollerance > x) && (p.x-tollerance < x)
+				&& (p.y+tollerance > y) && (p.y-tollerance < y);
+	}
+
+	public Vec add(float dx, float dy) {
+		Vec res = new Vec(this);
+		res.x += dx;
+		res.y += dy;
+		return res;
+	}
+
+	public void reset() {
+		x = 0;
+		y = 0;
+		
+	}
+
+	
 	
 }

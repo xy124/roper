@@ -1,14 +1,16 @@
 package org.roper;
 
-import java.awt.Image;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 
 public class Player implements IGameObject, KeyListener {
+	final float MSPEED  = 5.0f;
+	final float GRAVITY = 1.0f;
+	final float JSPEED  = -9.0f;
+	
+	
 	Vec pos;
 	Vec dPos;
 	
@@ -16,9 +18,12 @@ public class Player implements IGameObject, KeyListener {
 	
 	Sprite sprite;
 	
+	private Game parent;
+	
 	public Player(World world) {
 		sprite = null;
 		this.world = world;
+		parent = null;
 	}
 	
 	@Override
@@ -26,19 +31,60 @@ public class Player implements IGameObject, KeyListener {
 		pos = new Vec(40, 40);
 		dPos = new Vec();
 		
+		
 		sprite = new Sprite();
 		sprite.load("share/bild2.jpg"); 
 		
 		world.sprites.add(sprite); 
 				
 	}
+	
+	void setParent(Game p) {
+		parent = p;
+	}
+	
+	boolean isOnGround() {
+		return isCollission(pos.add(0.0f,1.0f));
+	}
 
 	@Override
 	public void update() {
-		pos.add(dPos); 
+		dPos.y += GRAVITY; 	
 		
-		sprite.pos = pos;
+		Vec finalPos = pos.add(dPos);
+		
+		Vec NdPos = dPos.normalize();
+		
+		Vec tempVec = pos.add(NdPos);
+		
+		boolean colliding = false;
+		boolean notThereYet = true;
+		while (notThereYet) {						
+			if (!pos.equals(finalPos, 1.0f)) 
+				if  (!isCollission(tempVec)) {
+					pos = tempVec;		
+					tempVec = pos.add(NdPos);
+				} else {
+					notThereYet = false;
+					colliding = true;
+				}			
+			else 
+				notThereYet = false;	
+		}
+		
+		if (colliding) 
+			dPos.reset();
+		
 
+		sprite.pos = pos;
+	}
+
+	private boolean isCollission(Vec pos) {
+		//check bordercollission:
+		return ( (pos.x+sprite.getWidth() > parent.getWidth()) || (pos.x < 0)
+				|| (pos.y+sprite.getHeight() > parent.getHeight()) || (pos.y < 0) );
+		
+		
 	}
 
 	@Override
@@ -49,11 +95,14 @@ public class Player implements IGameObject, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent evt) {
-		final int MSPEED = 10;
+		
 		if (evt.getKeyCode() == KeyEvent.VK_RIGHT) 
 			dPos.x = MSPEED;
 		if (evt.getKeyCode() == KeyEvent.VK_LEFT) 
-			dPos.y = -MSPEED;
+			dPos.x = -MSPEED;
+		
+		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() )
+			dPos.y = JSPEED;
 		
 		
 		

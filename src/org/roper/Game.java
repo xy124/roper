@@ -26,6 +26,8 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	
 	public Game() {
 		children = new ArrayList<IGameObject>();
+		world = new World();
+		
 	}
 	
 	boolean started;
@@ -39,19 +41,14 @@ public class Game extends Frame implements IGameObject, Runnable  {
 			    System.exit(0);
 			  }
 			});
-		
-		
-		
-		
-		
-		
-
-
-		world = new World();
 		world.init();
+		
 
 		player = new Player(world);
-		player.init();
+		player.init();		
+		player.setParent(this);
+		addKeyListener(player);		
+		children.add(player);
 
 		if (dbImage == null) {
 			dbImage = createImage (this.getSize().width, this.getSize().height);
@@ -150,6 +147,7 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		//startingpoint...
 		Game game = new Game();
 		game.init();
+		
 	}
 	
 }
