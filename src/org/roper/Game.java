@@ -7,6 +7,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -18,20 +20,17 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	private Image dbImage;
 	private Graphics dbg;
 	
-	Image worldimg;
-	
 	World world;
 	
-	int tim = 0;
+	private List<IGameObject> children;
+	
+	public Game() {
+		children = new ArrayList<IGameObject>();
+	}
+	
 	boolean started;
 	@Override
-	public void init() {
-		try {
-		    worldimg = ImageIO.read(new File("share/bild.jpg"));
-		} catch (IOException e) {
-		}
-		
-		
+	public void init() {		
 		started = false;
 		setSize(640, 480);
 		setVisible(true);
@@ -40,30 +39,31 @@ public class Game extends Frame implements IGameObject, Runnable  {
 			    System.exit(0);
 			  }
 			});
-		started = true;
 		
-		// Erniedrigen der ThreadPriority
-	      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);	      
-	      // Solange true ist läuft der Thread weiter
-	  
-	      
-	    
-	      world = new World();
-	      world.init();
-	      
-	      player = new Player(world);
-	      player.init();
-	      
+		
+		
+		
+		
+		
+
+
+		world = new World();
+		world.init();
+
+		player = new Player(world);
+		player.init();
+
 		if (dbImage == null) {
-	    	dbImage = createImage (this.getSize().width, this.getSize().height);
-	    	
-	    	dbg = dbImage.getGraphics ();
-	    }
-	    
+			dbImage = createImage (this.getSize().width, this.getSize().height);
+
+			dbg = dbImage.getGraphics ();
+		}
+
 		// Schaffen eines neuen Threads, in dem das Spiel läuft	
 		Thread th = new Thread(this);
-			
+
 		// Starten des Threads
+		started = true;
 		th.start();
 		
 
@@ -75,24 +75,23 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	@Override
 	public void update() {
 		
-		//TODO call update of members.,...
+		for (IGameObject go: children) {
+			go.update();
+		}
+		
+		
 		// Neuzeichnen des Applets
         repaint();
-  
-        
+         
 
+        //sleep...
         try {
               // Stoppen des Threads für in Klammern angegebene Millisekunden
               Thread.sleep (20);
         } catch (InterruptedException ex) {}	            
 
-        // Zurücksetzen der ThreadPriority auf Maximalwert
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-        tim++;
-        if(tim>2250){
-        	started = false;
-        	
-        }
+       
+       
 
 	}
 
@@ -102,21 +101,20 @@ public class Game extends Frame implements IGameObject, Runnable  {
 
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Game game = new Game();
-		game.init();
-	}
+	
+	
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		// Erniedrigen der ThreadPriority
+		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);	      
+
 		 while (started) {	    	  	
 	          update();
 	    } 
+		 
+		// Zurücksetzen der ThreadPriority auf Maximalwert
+        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
 	
 	/**Doppelpufferung**/
@@ -139,13 +137,19 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	public void paint (Graphics g) {		
 		
 		g.drawString("Punkte: ", 100, 100);
-		//draw background....
-		g.drawImage(worldimg, 0, 0, this);
+		g.drawImage(((Sprite) world.getBackground()).getImg(), 0, 0, this);
 		
 		for (Sprite i: world.sprites) {
 			
 			g.drawImage(i.img, (int) i.pos.x, (int) i.pos.y, this);			
 		}
+	}
+	
+	
+	public static void main(String[] args) {
+		//startingpoint...
+		Game game = new Game();
+		game.init();
 	}
 	
 }
