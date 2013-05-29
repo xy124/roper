@@ -18,10 +18,7 @@ public class World implements IGameObject {
 
 	@Override
 	public void init() {		
-		background.load("share/bild.jpg");
-		
-		
-		
+		background.load("share/bild.jpg");	
 	}
 
 	@Override
@@ -39,7 +36,5 @@ public class World implements IGameObject {
 	public Object getBackground() {		
 		return background;
 	}
-
-
 
 }

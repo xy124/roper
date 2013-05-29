@@ -35,7 +35,8 @@ public class Player implements IGameObject, KeyListener {
 		sprite = new Sprite();
 		sprite.load("share/bild2.jpg"); 
 		
-		world.sprites.add(sprite); 
+		world.sprites.add(sprite);
+		
 				
 	}
 	
@@ -51,25 +52,45 @@ public class Player implements IGameObject, KeyListener {
 	public void update() {
 		dPos.y += GRAVITY; 	
 		
-		Vec finalPos = pos.add(dPos);
+		//hint: to change precision divide k_end by p and multiply  NdPos by p
 		
 		Vec NdPos = dPos.normalize();
 		
-		Vec tempVec = pos.add(NdPos);
+		//k * NdPos =: tempVec
+		int k = 0;
+		int k_end = (int) (dPos.abs()+1.0f);
+				
 		
-		boolean colliding = false;
+		Vec tempVec;
+		
+		
+		
 		boolean notThereYet = true;
-		while (notThereYet) {						
-			if (!pos.equals(finalPos, 1.0f)) 
-				if  (!isCollission(tempVec)) {
-					pos = tempVec;		
-					tempVec = pos.add(NdPos);
-				} else {
+		while (notThereYet) {
+			tempVec = pos.add(NdPos);
+			k++;						
+			if (k == k_end) {
+				notThereYet = false;
+				
+			} else {
+				 Collission col = getCollission(tempVec);
+				if  (col.horizontal && col.vertical) {
 					notThereYet = false;
-					colliding = true;
-				}			
-			else 
-				notThereYet = false;	
+						
+				} else {
+					if (col.vertical && (dPos.y > 0)) //dPos.y > 0   <=> jumping 
+						NdPos.y = 0;
+					if (col.horizontal)
+						NdPos.x = 0;
+
+					pos = pos.add(NdPos); 
+					
+				}	
+				
+			} 
+					
+			
+		
 		}
 		
 		//if (colliding) 
@@ -79,18 +100,23 @@ public class Player implements IGameObject, KeyListener {
 		sprite.pos = pos;
 	}
 
+	private Collission getCollission(Vec tempVec) {
+		Collission result = new Collission();
+		result.horizontal = (pos.x+sprite.getWidth() > parent.getWidth()-10) || (pos.x < 10);
+		result.vertical = (pos.y+sprite.getHeight() > parent.getHeight()-10) || (pos.y < 10);
+		return result;
+	}
+
+	@Deprecated
 	private boolean isCollission(Vec pos) {
 		//check bordercollission:
-		return ( (pos.x+sprite.getWidth() >= parent.getWidth()) || (pos.x <= 0)
-				|| (pos.y+sprite.getHeight() >= parent.getHeight()) || (pos.y <= 0) );
-		
-		
+		return ( (pos.x+sprite.getWidth() > parent.getWidth()-10) || (pos.x < 10)
+				|| (pos.y+sprite.getHeight() > parent.getHeight()-10) || (pos.y < 10) );	
 	}
 
 	@Override
 	public void quit() {
 		world.sprites.remove(sprite);
-
 	}
 
 	@Override
@@ -101,8 +127,9 @@ public class Player implements IGameObject, KeyListener {
 		if (evt.getKeyCode() == KeyEvent.VK_LEFT) 
 			dPos.x = -MSPEED;
 		
-		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() )
+		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() ) 
 			dPos.y = JSPEED;
+		
 		
 		
 		
@@ -112,7 +139,7 @@ public class Player implements IGameObject, KeyListener {
 	public void keyReleased(KeyEvent evt) {
 		if ((evt.getKeyCode() == KeyEvent.VK_RIGHT) && (dPos.x > 0)) 
 			dPos.x = 0;
-		if ((evt.getKeyCode() == KeyEvent.VK_RIGHT) && (dPos.x < 0)) 
+		if ((evt.getKeyCode() == KeyEvent.VK_LEFT) && (dPos.x < 0)) 
 			dPos.x = 0;
 		
 	}
