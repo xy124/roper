@@ -45,11 +45,13 @@ public class Player implements IGameObject, KeyListener {
 	}
 	
 	boolean isOnGround() {
-		return isCollission(pos.add(0.0f,1.0f));
+		return getCollission(pos.add(0.0f,1.0f)).bottom;
 	}
 
 	@Override
 	public void update() {
+		
+		
 		dPos.y += GRAVITY; 	
 		
 		//hint: to change precision divide k_end by p and multiply  NdPos by p
@@ -74,18 +76,26 @@ public class Player implements IGameObject, KeyListener {
 				
 			} else {
 				 Collission col = getCollission(tempVec);
-				if  (col.horizontal && col.vertical) {
-					notThereYet = false;
-						
-				} else {
-					if (col.vertical && (dPos.y > 0)) //dPos.y > 0   <=> jumping 
-						NdPos.y = 0;
-					if (col.horizontal)
-						NdPos.x = 0;
-
-					pos = pos.add(NdPos); 
-					
-				}	
+			
+				
+				boolean mayMove = false;
+				
+				if (col.bottom && (dPos.y > 0)) //dPos.y > 0   <=> jumping 
+					NdPos.y = 0.0f;						
+				else
+					mayMove = true;
+				
+			
+				if (col.horizontal()) 					
+					NdPos.x = 0.0f;					
+				else
+					mayMove = true;
+					 
+			
+				if (mayMove) 
+					pos = pos.add(NdPos);
+				else
+					notThereYet = false;		
 				
 			} 
 					
@@ -102,16 +112,11 @@ public class Player implements IGameObject, KeyListener {
 
 	private Collission getCollission(Vec tempVec) {
 		Collission result = new Collission();
-		result.horizontal = (pos.x+sprite.getWidth() > parent.getWidth()-10) || (pos.x < 10);
-		result.vertical = (pos.y+sprite.getHeight() > parent.getHeight()-10) || (pos.y < 10);
+		result.top = tempVec.y < 10;
+		result.bottom = tempVec.y+sprite.getHeight() > parent.getHeight()-10;
+		result.left = tempVec.x < 10;
+		result.right = tempVec.x+sprite.getWidth() > parent.getWidth()-10;
 		return result;
-	}
-
-	@Deprecated
-	private boolean isCollission(Vec pos) {
-		//check bordercollission:
-		return ( (pos.x+sprite.getWidth() > parent.getWidth()-10) || (pos.x < 10)
-				|| (pos.y+sprite.getHeight() > parent.getHeight()-10) || (pos.y < 10) );	
 	}
 
 	@Override
@@ -119,6 +124,10 @@ public class Player implements IGameObject, KeyListener {
 		world.sprites.remove(sprite);
 	}
 
+	
+	//TODO bug : if u press 2 keys at once it doesnt work :(
+	//workaround: http://stackoverflow.com/questions/2702203/keyboard-input-for-a-game-in-java
+	
 	@Override
 	public void keyPressed(KeyEvent evt) {
 		
