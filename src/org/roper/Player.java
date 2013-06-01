@@ -45,7 +45,7 @@ public class Player implements IGameObject, KeyListener {
 	}
 	
 	boolean isOnGround() {
-		return getCollission(pos.add(0.0f,1.0f)).bottom;
+		return getCollision(pos.add(0.0f,1.0f)).bottom;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class Player implements IGameObject, KeyListener {
 				notThereYet = false;
 				
 			} else {
-				 Collission col = getCollission(tempVec);
+				 Collision col = getCollision(tempVec);
 			
 				
 				boolean mayMove = false;
@@ -110,8 +110,8 @@ public class Player implements IGameObject, KeyListener {
 		sprite.pos = pos;
 	}
 
-	private Collission getCollission(Vec tempVec) {
-		Collission result = new Collission();
+	private Collision getCollision(Vec tempVec) {
+		Collision result = new Collision();
 		result.top = tempVec.y < 10;
 		result.bottom = tempVec.y+sprite.getHeight() > parent.getHeight()-10;
 		result.left = tempVec.x < 10;

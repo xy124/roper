@@ -1,6 +1,6 @@
 package org.roper;
 
-public class Collission {
+public class Collision {
 	boolean horizontal() {
 		return (left || right);
 	}
