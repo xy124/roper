@@ -33,7 +33,7 @@ public class World implements IGameObject {
 		
 	}
 
-	public Object getBackground() {		
+	public Sprite getBackground() {		
 		return background;
 	}
 

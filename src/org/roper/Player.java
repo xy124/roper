@@ -3,12 +3,13 @@ package org.roper;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
 
 public class Player implements IGameObject, KeyListener {
 	final float MSPEED  = 5.0f;
-	final float GRAVITY = 1.0f;
-	final float JSPEED  = -15.0f;
+	final float GRAVITY = 0.9f;
+	final float JSPEED  = -17.0f;
 	
 	
 	Vec pos;
@@ -48,6 +49,8 @@ public class Player implements IGameObject, KeyListener {
 		return getCollision(pos.add(0.0f,1.0f)).bottom;
 	}
 
+	
+	
 	@Override
 	public void update() {
 		
@@ -75,15 +78,18 @@ public class Player implements IGameObject, KeyListener {
 				notThereYet = false;
 				
 			} else {
-				 Collision col = getCollision(tempVec);
+				 Collision col = getCollision(tempVec, NdPos);
 			
 				
 				boolean mayMove = false;
 				
-				if (col.bottom && (dPos.y > 0)) //dPos.y > 0   <=> jumping 
-					NdPos.y = 0.0f;						
-				else
+				if (col.vertical()) { //dPos.y > 0   <=> jumping 
+					NdPos.y = 0.0f;
+					dPos.y = 0.0f; //brake as I'm on the floor
+				} else
 					mayMove = true;
+				
+				
 				
 			
 				if (col.horizontal()) 					
@@ -109,14 +115,64 @@ public class Player implements IGameObject, KeyListener {
 
 		sprite.pos = pos;
 	}
-
+	
 	private Collision getCollision(Vec tempVec) {
-		Collision result = new Collision();
-		result.top = tempVec.y < 10;
-		result.bottom = tempVec.y+sprite.getHeight() > parent.getHeight()-10;
-		result.left = tempVec.x < 10;
-		result.right = tempVec.x+sprite.getWidth() > parent.getWidth()-10;
-		return result;
+		return getCollision(tempVec, null);
+	}
+
+	private Collision getCollision(Vec where, Vec dWhere) {		
+		//which borders to check?
+		//...
+		boolean right  = false, 
+				left   = false,
+				top    = false,
+				bottom = false;
+		boolean checkAll = (dWhere == null);
+		if (dWhere == null)
+			dWhere = new Vec();
+		
+		if (checkAll || (dWhere.x > 0.0f)) {
+			right = collisionCheckLine(
+					where.add(sprite.getWidth(), 0.0f),
+					where.add(sprite.getWidth(), sprite.getHeight()) );
+		}
+		
+		if (checkAll || (dWhere.x < 0.0f)) {
+			left  = collisionCheckLine(
+					where,
+					where.add(0.0f, sprite.getHeight()) );
+		}
+		
+		if (checkAll || (dWhere.y < 0.0f)) {
+			top   = collisionCheckLine(
+					where,
+					where.add(sprite.getWidth(), 0.0f) );
+		}
+		
+		if (checkAll || (dWhere.y > 0.0f)) {
+			bottom = collisionCheckLine(
+					where.add(0.0f, sprite.getHeight()),
+					where.add(sprite.getWidth(), sprite.getHeight()) );
+		}
+		
+		return new Collision(top, bottom, left, right);
+	}
+
+	private boolean collisionCheckLine(Vec start, Vec end) {
+		Vec step = end.subtract(start);
+		int times = (int) step.abs();
+		step = step.normalize();
+	
+		start = start.add(step);
+		
+		for (int i = 1; i < times; i++) {	
+			
+			if (world.getBackground().isBlack(start))
+				return true;
+			start = start.add(step);
+		}
+				
+		return false;
 	}
 
 	@Override
@@ -138,9 +194,6 @@ public class Player implements IGameObject, KeyListener {
 		
 		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() ) 
 			dPos.y = JSPEED;
-		
-		
-		
 		
 	}
 

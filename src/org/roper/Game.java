@@ -3,6 +3,8 @@ package org.roper;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -12,7 +14,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-public class Game extends Frame implements IGameObject, Runnable  {
+public class Game extends Frame implements IGameObject, Runnable, MouseListener  {
 
 	
 	Player player; //todo clean this stuff up... make it private, user getters and setters...
@@ -49,6 +51,7 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		player.setParent(this);
 		addKeyListener(player);		
 		children.add(player);
+		addMouseListener(this);
 
 		if (dbImage == null) {
 			dbImage = createImage (this.getSize().width, this.getSize().height);
@@ -70,7 +73,8 @@ public class Game extends Frame implements IGameObject, Runnable  {
 	
 	
 	@Override
-	public void update() {
+	public void update() {		
+		StatusBar.reset();
 		
 		for (IGameObject go: children) {
 			go.update();
@@ -133,8 +137,10 @@ public class Game extends Frame implements IGameObject, Runnable  {
 
 	public void paint (Graphics g) {		
 		
-		g.drawString("Punkte: ", 100, 100);
+		
 		g.drawImage(((Sprite) world.getBackground()).getImg(), 0, 0, this);
+		
+		g.drawString("state: " + StatusBar.str, 100, 100);
 		
 		for (Sprite i: world.sprites) {
 			
@@ -147,6 +153,47 @@ public class Game extends Frame implements IGameObject, Runnable  {
 		//startingpoint...
 		Game game = new Game();
 		game.init();
+		
+	}
+
+
+
+	@Override
+	public void mouseClicked(MouseEvent evt) {
+		System.out.print(""+evt.getX()+"; "+evt.getY());
+		System.out.println(""+world.getBackground().isBlack(new Vec(evt.getX(), evt.getY())));
+		
+	}
+
+
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 	

@@ -62,6 +62,20 @@ public class Vec {
 		return res;		
 	}
 
+	public Vec subtract(Vec rhs) {
+		Vec res = new Vec(this);
+		res.x -= rhs.x;
+		res.y -= rhs.y;
+		return res;		
+	}
+	
+	public Vec subtract(float dx, float dy) {
+		Vec res = new Vec(this);
+		res.x -= dx;
+		res.y -= dy;
+		return res;
+	}
+
 	
 	
 }
