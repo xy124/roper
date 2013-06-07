@@ -58,7 +58,7 @@ public class Game extends Frame implements Runnable, MouseListener  {
 		player = new Player();
 		player.init(this);		
 		addKeyListener(player);		
-		children.add(player);
+		//children.add(player); don'T do this here to ensure that rope is added AFTER player!
 		addMouseListener(this);
 
 		currentBuffer = 0;
@@ -104,7 +104,7 @@ public class Game extends Frame implements Runnable, MouseListener  {
 	
 	
 	
-	private void update() {
+	private synchronized void update() {
 		StatusBar.reset();
 		
 		Graphics g = dbg[currentBuffer];
@@ -115,19 +115,22 @@ public class Game extends Frame implements Runnable, MouseListener  {
 		
 		g.drawString("state: " + StatusBar.str, 100, 100);
 
-		
-		
-
 		for (IGameObject go: children) {
 			go.update(g);
 		}
+		
+		
+
+		
 
 		//sleep...
 		try {
 			// Stoppen des Threads für in Klammern angegebene Millisekunden
-			Thread.sleep (20);
+			Thread.sleep (25);
 		} catch (InterruptedException ex) {}	            
 
+		
+		//System.out.println("Time call flip:"+System.currentTimeMillis());
 		flip();
 		repaint();
 
@@ -169,7 +172,7 @@ public class Game extends Frame implements Runnable, MouseListener  {
 	/**
 	 * swaps current buffer
 	 */
-	private void flip() {
+	private synchronized void flip() {
 		currentBuffer = not(currentBuffer);
 	}
 

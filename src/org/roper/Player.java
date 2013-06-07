@@ -4,7 +4,7 @@ package org.roper;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
+
 
 
 public class Player extends Collidable implements IGameObject, KeyListener {
@@ -17,12 +17,8 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	
 	Rope rope;
 	
-	private Game parent;
-	
 	public Player() {
 		super();				
-		parent = null;
-		
 		pos = new Vec();
 		dPos = new Vec();
 		sprite = new Sprite();
@@ -34,13 +30,15 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	public void init(Game parent) {
 		pos.set(40.0f, 40.0f);
 		
-		parent.addChild(rope);
-		
 		sprite.load("share/bild2.jpg"); 
 		
-		this.parent = parent;
-		
 		super.init(parent.getWorld(), sprite.getRect());
+		
+		rope.init(new Vec(1,1), this, world);
+		
+		parent.addChild(this);
+		
+		parent.addChild(rope);
 				
 	}
 	
@@ -59,6 +57,8 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 		doPhysics();
 		
 		sprite.pos = pos;
+		
+		//System.out.println("Time draw player:"+System.currentTimeMillis());
 		
 		g.drawImage(sprite.img, (int) sprite.pos.x, (int) sprite.pos.y, null);	
 	}
@@ -86,13 +86,13 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() ) 
 			dPos.y = JSPEED;
 		
-		if (evt.getKeyCode() == KeyEvent.VK_SPACE  && !rope.isActive()) {//rope!			
-			rope.init(new Vec(1,1), this, world);
-			
+		if (evt.getKeyCode() == KeyEvent.VK_SPACE  && !rope.isActive()) {//rope!						
+			rope.reset();
+			rope.setActive(true);						
 		}
 		
 		if (evt.getKeyCode() == KeyEvent.VK_D) {
-			//delete ropes for debug reasons... TODO
+			//delete ropes for debug reasons... TODO			
 			rope.setActive(false);
 		}
 			

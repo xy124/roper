@@ -7,7 +7,7 @@ import java.util.List;
 public class Rope implements IGameObject {
 	List<Vec> knicks;
 	Player owner;
-	Vec end;
+	Vec end, start;
 	World world;
 	int len;
 	boolean isShooting;
@@ -30,20 +30,33 @@ public class Rope implements IGameObject {
 
 	public void init(Vec direction, Player owner, World world) {				
 		this.owner = owner;
-		len = 0;
-		isShooting = true;
+		
+		
 		this.world = world;
 		this.dir = direction.normalize();
 		
-		active = true;
+		active = false;
 		
-		end = owner.pos;		
+	}
+	
+	/**
+	 * should be called before every ropethrow! 
+	 */
+	void reset() {
+		len = 0;
+		isShooting = true;
+		
+		knicks.clear();		
+		
+		start = owner.pos; //TODO: is no call by ref...
+		
+		end = owner.pos;	
 	}
 
 
 
 	@Override
-	public void update(Graphics g) {
+	public synchronized void update(Graphics g) {
 		if (!active)
 			return;
 		
@@ -71,16 +84,14 @@ public class Rope implements IGameObject {
 			; //TODO do what???
 		
 		//draw it!
-		//low: maybe put this in extern paint function	
+		
+		//System.out.println("Time draw rope:"+System.currentTimeMillis());
+		
+		//low: maybe put this in extern paint function
 		g.drawLine((int)owner.pos.x, (int)owner.pos.y, (int)end.x, (int)end.y);
 		
 		
 	}
-	
-	public void paint() {
-		
-	}
-
 
 
 	@Override
