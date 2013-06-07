@@ -11,6 +11,8 @@ public class Collidable {
 	
 	public Collidable() {
 		world = null;
+		pos = new Vec();
+		dPos = new Vec();
 	}
 
 	void init(World collidingWorld, Rect myRect) {
@@ -19,7 +21,11 @@ public class Collidable {
 		
 	}
 	
-	synchronized void doPhysics() {
+	/**
+	 * 
+	 * @return steps of NdPos that were done
+	 */
+	synchronized int doPhysics() {
 		//hint: to change precision divide k_end by p and multiply  NdPos by p
 
 		Vec NdPos = dPos.normalize();
@@ -38,10 +44,9 @@ public class Collidable {
 			tempVec = pos.add(NdPos);
 			k++;						
 			if (k == k_end) {
-				notThereYet = false;
-
+				notThereYet = false;				
 			} else {
-				Collision col = getCollision(tempVec, NdPos);
+				Collision col = getCollision(tempVec, NdPos); //TODO: put that in last collission maybe...
 
 
 				boolean mayMove = false;
@@ -74,6 +79,7 @@ public class Collidable {
 
 		//if (colliding) 
 		//pos = pos.add(NdPos.multiply(-3));
+		return k - 1;
 				
 
 	}

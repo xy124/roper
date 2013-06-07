@@ -19,8 +19,7 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	
 	public Player() {
 		super();				
-		pos = new Vec();
-		dPos = new Vec();
+		
 		sprite = new Sprite();
 		
 		rope = new Rope();

@@ -4,11 +4,10 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rope implements IGameObject {
+public class Rope extends Collidable implements IGameObject {
 	List<Vec> knicks;
 	Player owner;
-	Vec end, start;
-	World world;
+	
 	int len;
 	boolean isShooting;
 	
@@ -31,11 +30,14 @@ public class Rope implements IGameObject {
 	public void init(Vec direction, Player owner, World world) {				
 		this.owner = owner;
 		
-		
-		this.world = world;
+				
 		this.dir = direction.normalize();
 		
 		active = false;
+		
+		super.init(world, new Rect(0,0));
+				
+		
 		
 	}
 	
@@ -47,10 +49,8 @@ public class Rope implements IGameObject {
 		isShooting = true;
 		
 		knicks.clear();		
-		
-		start = owner.pos; //TODO: is no call by ref...
-		
-		end = owner.pos;	
+						
+		pos = owner.pos;
 	}
 
 
@@ -61,35 +61,38 @@ public class Rope implements IGameObject {
 			return;
 		
 		if (isShooting) {
-			boolean notThereYet = true;
-			int k = 1;
-			while (notThereYet) {
-				if (world.background.isSolid(end)) {
+			//low hope that owner's dpos didn't change this update
+			dPos = dir.multiply(shootSpeed).add(owner.dPos);						
+			
+			doPhysics();
+
+			//one step further to be on solid with rope
+			pos = pos.add(dPos.normalize());
+
+			//next step wuold be a collission?
+			
+			len = (int) (owner.pos.subtract(pos).abs());
+			if (world.background.isSolid(pos)) {
+				isShooting = false;					
+			} else {		
+							
+				if (len > maxRopeLen) {
 					isShooting = false;
-					notThereYet = false;
-				} else {					
-					end = end.add(dir);
-					k++;
-					len++;
-					if (k > shootSpeed)
-						notThereYet = false;
-					if (len > maxRopeLen) {
-						isShooting = false;
-						notThereYet = false;
-						killMe = true;
-						active = false;
-					}
+
+					killMe = true;
+					active = false;
 				}
 			}
 		} else
-			; //TODO do what???
+			dPos.set(0.0f, 0.0f);
+		
 		
 		//draw it!
 		
 		//System.out.println("Time draw rope:"+System.currentTimeMillis());
 		
 		//low: maybe put this in extern paint function
-		g.drawLine((int)owner.pos.x, (int)owner.pos.y, (int)end.x, (int)end.y);
+		g.drawLine((int)owner.pos.x, (int)owner.pos.y, (int)pos.x, (int)pos.y);
 		
 		
 	}

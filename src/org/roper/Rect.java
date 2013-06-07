@@ -5,6 +5,13 @@ public class Rect {
 	int height = 0;
 	
 	
+	public Rect(int h, int w) {
+		height = h;
+		width = w;
+	}
+	public Rect() {
+		
+	}
 	public int getWidth() {
 		return width;
 	}
