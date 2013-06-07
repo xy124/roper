@@ -76,6 +76,12 @@ public class Vec {
 		return res;
 	}
 
+	public void set(float xx, float yy) {
+		x = xx;
+		y = yy;
+		
+	}
+
 	
 	
 }

@@ -17,38 +17,25 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	private Game parent;
 	
 	public Player() {
-		super();		
-		sprite = null;
+		super();				
 		parent = null;
-	}
-	
-	
-	@Override
-	public void init() { //TODO; use constructor to set world... clean this up... only one init!
-		pos = new Vec(40, 40);
+		
+		pos = new Vec();
 		dPos = new Vec();
 		sprite = new Sprite();
-		sprite.load("share/bild2.jpg"); 
 	}
 	
 	
-	public void init(World pworld) {
-		init();
+	public void init(Game parent) {
+		pos.set(40.0f, 40.0f);
 		
+		sprite.load("share/bild2.jpg"); 
 		
+		this.parent = parent;
 		
-		super.init(pworld, sprite.getRect());
-		
+		super.init(parent.getWorld(), sprite.getRect());
 		
 		world.sprites.add(sprite);
-		
-		
-		
-				
-	}
-	
-	void setParent(Game p) {
-		parent = p;
 	}
 	
 	boolean isOnGround() {
@@ -80,6 +67,9 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent evt) {
 		
+		
+		if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) 
+			System.exit(0);
 		if (evt.getKeyCode() == KeyEvent.VK_RIGHT) 
 			dPos.x = MSPEED;
 		if (evt.getKeyCode() == KeyEvent.VK_LEFT) 
@@ -89,7 +79,8 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 			dPos.y = JSPEED;
 		
 		if ((evt.getKeyCode() == KeyEvent.VK_SPACE) ) {//rope!
-			Rope r = new Rope(new Vec(1.0f, 1.0f), this, world);
+			Rope r = new Rope();
+			r.init(new Vec(1,1), this, world);
 			world.ropes.add(r);
 			parent.addChild(r);
 			
@@ -100,7 +91,7 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 		if ((evt.getKeyCode() == KeyEvent.VK_D) ) {//rope!
 			for (Rope r: world.ropes){
 				parent.removeChild(r);
-				r = null;
+			
 			}
 			world.ropes.clear();
 			

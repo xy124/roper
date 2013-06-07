@@ -33,7 +33,7 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 	}
 	
 	boolean started;
-	@Override
+
 	public void init() {		
 		started = false;
 		setSize(640, 480);
@@ -49,8 +49,7 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 		
 
 		player = new Player();
-		player.init(world);		
-		player.setParent(this);
+		player.init(this);		
 		addKeyListener(player);		
 		children.add(player);
 		addMouseListener(this);
@@ -153,8 +152,8 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 			//TODO: put killme in all objects from children???
 			if (r.killMe) {
 				children.remove(r);
-				world.ropes.remove(r);
-				//TODO! this causes errors! //XXX
+				world.ropes.remove(r);			
+				//TODO! this causes errors! //XXX				
 			} else
 				g.drawLine((int)r.owner.pos.x, (int)r.owner.pos.y, (int)r.end.x, (int)r.end.y);			
 		}
@@ -221,6 +220,12 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 	public void removeChild(IGameObject it) {
 		children.remove(it);
 		
+	}
+
+
+
+	public World getWorld() {
+		return world;
 	}
 	
 }

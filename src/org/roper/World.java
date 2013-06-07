@@ -6,7 +6,15 @@ import java.util.ArrayList;
 public class World implements IGameObject {
 	
 	Sprite background;
+	
+	/**
+	 * sprites that will be drawn by game
+	 */
 	ArrayList<Sprite> sprites;
+	
+	/**
+	 * ropes that will be drwan by game
+	 */
 	ArrayList<Rope> ropes;
 	
 	public World() {
@@ -18,7 +26,6 @@ public class World implements IGameObject {
 	}
 	
 
-	@Override
 	public void init() {		
 		background.load("share/bild.jpg");	
 	}

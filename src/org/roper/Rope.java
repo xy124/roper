@@ -17,9 +17,14 @@ public class Rope implements IGameObject {
 	final private int maxRopeLen = 200;
 	boolean killMe; //TODO: handle that better!
 	
-	public Rope(Vec direction, Player owner, World world) {
+	public Rope() {
 		killMe = false;
 		knicks = new ArrayList<Vec>();
+	}
+
+
+
+	public void init(Vec direction, Player owner, World world) {				
 		this.owner = owner;
 		len = 0;
 		isShooting = true;
@@ -27,14 +32,6 @@ public class Rope implements IGameObject {
 		this.dir = direction.normalize();
 		
 		end = owner.pos;		
-	}
-
-
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 
