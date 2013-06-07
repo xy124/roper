@@ -1,6 +1,7 @@
 package org.roper;
 
 
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -14,6 +15,8 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	
 	Sprite sprite;
 	
+	Rope rope;
+	
 	private Game parent;
 	
 	public Player() {
@@ -23,19 +26,22 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 		pos = new Vec();
 		dPos = new Vec();
 		sprite = new Sprite();
+		
+		rope = new Rope();
 	}
 	
 	
 	public void init(Game parent) {
 		pos.set(40.0f, 40.0f);
 		
+		parent.addChild(rope);
+		
 		sprite.load("share/bild2.jpg"); 
 		
 		this.parent = parent;
 		
 		super.init(parent.getWorld(), sprite.getRect());
-		
-		world.sprites.add(sprite);
+				
 	}
 	
 	boolean isOnGround() {
@@ -45,7 +51,7 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 	
 	
 	@Override
-	public void update() {
+	public void update(Graphics g) {
 		
 		//TODO: put in doPhysics?
 		dPos.y += GRAVITY; 	
@@ -53,11 +59,13 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 		doPhysics();
 		
 		sprite.pos = pos;
+		
+		g.drawImage(sprite.img, (int) sprite.pos.x, (int) sprite.pos.y, null);	
 	}
 
 	@Override
 	public void quit() {
-		world.sprites.remove(sprite);
+		
 	}
 
 	
@@ -78,23 +86,14 @@ public class Player extends Collidable implements IGameObject, KeyListener {
 		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() ) 
 			dPos.y = JSPEED;
 		
-		if ((evt.getKeyCode() == KeyEvent.VK_SPACE) ) {//rope!
-			Rope r = new Rope();
-			r.init(new Vec(1,1), this, world);
-			world.ropes.add(r);
-			parent.addChild(r);
+		if (evt.getKeyCode() == KeyEvent.VK_SPACE  && !rope.isActive()) {//rope!			
+			rope.init(new Vec(1,1), this, world);
 			
 		}
 		
-		
-		//TODO: for debug only: del all ropes...
-		if ((evt.getKeyCode() == KeyEvent.VK_D) ) {//rope!
-			for (Rope r: world.ropes){
-				parent.removeChild(r);
-			
-			}
-			world.ropes.clear();
-			
+		if (evt.getKeyCode() == KeyEvent.VK_D) {
+			//delete ropes for debug reasons... TODO
+			rope.setActive(false);
 		}
 			
 		

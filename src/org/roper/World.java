@@ -1,5 +1,6 @@
 package org.roper;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 
@@ -7,20 +8,9 @@ public class World implements IGameObject {
 	
 	Sprite background;
 	
-	/**
-	 * sprites that will be drawn by game
-	 */
-	ArrayList<Sprite> sprites;
-	
-	/**
-	 * ropes that will be drwan by game
-	 */
-	ArrayList<Rope> ropes;
 	
 	public World() {
-		//all these will be drawn in game's paint()
-		sprites = new ArrayList<Sprite>();
-		ropes = new ArrayList<Rope>();
+		//all these will be drawn in game's paint()		
 		
 		background = new Sprite();
 	}
@@ -31,8 +21,8 @@ public class World implements IGameObject {
 	}
 
 	@Override
-	public void update() {
-		// TODO Auto-generated method stub
+	public void update(Graphics g) {
+		//Hint: worldimg is drawn from game to put it in background!
 		
 	}
 

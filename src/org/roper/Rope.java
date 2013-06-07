@@ -1,5 +1,6 @@
 package org.roper;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,10 +17,13 @@ public class Rope implements IGameObject {
 	final private float shootSpeed = 20.0f;
 	final private int maxRopeLen = 200;
 	boolean killMe; //TODO: handle that better!
+	private boolean active;
 	
 	public Rope() {
-		killMe = false;
+		killMe = false; //TODO: not needed anymore
+		
 		knicks = new ArrayList<Vec>();
+		active = false;
 	}
 
 
@@ -31,13 +35,18 @@ public class Rope implements IGameObject {
 		this.world = world;
 		this.dir = direction.normalize();
 		
+		active = true;
+		
 		end = owner.pos;		
 	}
 
 
 
 	@Override
-	public void update() {
+	public void update(Graphics g) {
+		if (!active)
+			return;
+		
 		if (isShooting) {
 			boolean notThereYet = true;
 			int k = 1;
@@ -61,6 +70,14 @@ public class Rope implements IGameObject {
 		} else
 			; //TODO do what???
 		
+		//draw it!
+		//low: maybe put this in extern paint function	
+		g.drawLine((int)owner.pos.x, (int)owner.pos.y, (int)end.x, (int)end.y);
+		
+		
+	}
+	
+	public void paint() {
 		
 	}
 
@@ -69,6 +86,19 @@ public class Rope implements IGameObject {
 	@Override
 	public void quit() {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public boolean isActive() {
+		return active;
+	}
+
+
+
+	public void setActive(boolean b) {
+		active = b;
 		
 	}
 	

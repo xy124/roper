@@ -14,13 +14,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-public class Game extends Frame implements IGameObject, Runnable, MouseListener  {
+public class Game extends Frame implements Runnable, MouseListener  {
 
 	
 	Player player; //todo clean this stuff up... make it private, user getters and setters...
 	
-	private Image dbImage;
-	private Graphics dbg;
+	private Image dbImage[];
+	private Graphics dbg[];
 	
 	World world;
 	
@@ -30,9 +30,16 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 		children = new ArrayList<IGameObject>();
 		world = new World();
 		
+		dbImage = new Image[2];
+		dbg = new Graphics[2];
+		
 	}
 	
 	boolean started;
+
+	
+	private int currentBuffer;
+
 
 	public void init() {		
 		started = false;
@@ -54,11 +61,17 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 		children.add(player);
 		addMouseListener(this);
 
-		if (dbImage == null) {
-			dbImage = createImage (this.getSize().width, this.getSize().height);
+		currentBuffer = 0;
+		
+		
+		if (dbImage[0] == null) 
+			dbImage[0] = createImage (this.getSize().width, this.getSize().height);
+		if (dbImage[1] == null) 
+			dbImage[1] = createImage (this.getSize().width, this.getSize().height);
 
-			dbg = dbImage.getGraphics ();
-		}
+			
+		dbg[0] = dbImage[0].getGraphics ();
+		dbg[1] = dbImage[1].getGraphics ();
 
 		// Schaffen eines neuen Threads, in dem das Spiel läuft	
 		Thread th = new Thread(this);
@@ -73,93 +86,96 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 
 	
 	
-	@Override
-	public void update() {		
-		StatusBar.reset();
-		
-		for (IGameObject go: children) {
-			go.update();
-		}
-		
-		
-		// Neuzeichnen des Applets
-        repaint();
-         
-
-        //sleep...
-        try {
-              // Stoppen des Threads für in Klammern angegebene Millisekunden
-              Thread.sleep (20);
-        } catch (InterruptedException ex) {}	            
-
-       
-       
-
-	}
-
-	@Override
-	public void quit() {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	
 
 	@Override
 	public void run() {
 		// Erniedrigen der ThreadPriority
 		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);	      
 
-		 while (started) {	    	  	
-	          update();
-	    } 
+		 while (started) {	
+			 
+			update();
+		 }
 		 
 		// Zurücksetzen der ThreadPriority auf Maximalwert
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
 	
-	/**Doppelpufferung**/
-	// Definition zweier Instanzvariablen für die Doppelpufferung im Kopf des Programmes
 	
-	/** Update - Methode, Realisierung der Doppelpufferung zur Reduzierung des Bildschirmflackerns */
-	public void update (Graphics g)	{	      
-	      // Bildschirm im Hintergrund löschen
-	      dbg.setColor (getBackground ());
-	      dbg.fillRect (0, 0, this.getSize().width, this.getSize().height);
-
-	      // Auf gelöschten Hintergrund Vordergrund zeichnen
-	      dbg.setColor (getForeground());
-	      paint (dbg);
-
-	      // Nun fertig gezeichnetes Bild Offscreen auf dem richtigen Bildschirm anzeigen
-	      g.drawImage (dbImage, 0, 0, this);
-	}
-
-	public void paint (Graphics g) {		
+	
+	
+	private void update() {
+		StatusBar.reset();
+		
+		Graphics g = dbg[currentBuffer];
+		resetDbg(g);
 		
 		
-		g.drawImage(((Sprite) world.getBackground()).getImg(), 0, 0, this);
+		g.drawImage(((Sprite) world.getBackground()).getImg(), 0, 0, this);		
 		
 		g.drawString("state: " + StatusBar.str, 100, 100);
+
 		
-		for (Sprite i: world.sprites) {
-			
-			g.drawImage(i.img, (int) i.pos.x, (int) i.pos.y, this);			
-		}
 		
-		for (Rope r: world.ropes) {
-			//TODO: put killme in all objects from children???
-			if (r.killMe) {
-				children.remove(r);
-				world.ropes.remove(r);			
-				//TODO! this causes errors! //XXX				
-			} else
-				g.drawLine((int)r.owner.pos.x, (int)r.owner.pos.y, (int)r.end.x, (int)r.end.y);			
+
+		for (IGameObject go: children) {
+			go.update(g);
 		}
+
+		//sleep...
+		try {
+			// Stoppen des Threads für in Klammern angegebene Millisekunden
+			Thread.sleep (20);
+		} catch (InterruptedException ex) {}	            
+
+		flip();
+		repaint();
+
+	}
+	private void resetDbg(Graphics g) {
+		// Bildschirm im Hintergrund löschen
+		g.setColor (getBackground ());
+		g.fillRect (0, 0, this.getSize().width, this.getSize().height);
+
+		// Auf gelöschten Hintergrund Vordergrund zeichnen
+		g.setColor (getForeground());
+		
+	}
+
+
+
+
+
+	
+
+	/** Update - Methode, Realisierung der Doppelpufferung zur Reduzierung des Bildschirmflackerns */
+	@Override
+	public void update (Graphics g)	{	      
+	      
+
+		// Nun fertig gezeichnetes Bild Offscreen auf dem richtigen Bildschirm anzeigen
+		g.drawImage (dbImage[not(currentBuffer)], 0, 0, this);
 	}
 	
+	/**
+	 * 
+	 * @param cb
+	 * @return returns (cb == 0 ? 1 : 0)
+	 */
+	private int not(int cb) {		
+		return (cb == 0 ? 1 : 0);
+	}
 	
+	/**
+	 * swaps current buffer
+	 */
+	private void flip() {
+		currentBuffer = not(currentBuffer);
+	}
+
+
+
+
 	public static void main(String[] args) {
 		//startingpoint...
 		Game game = new Game();
