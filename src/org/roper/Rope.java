@@ -77,6 +77,7 @@ public class Rope implements IGameObject {
 						isShooting = false;
 						notThereYet = false;
 						killMe = true;
+						active = false;
 					}
 				}
 			}
