@@ -24,5 +24,8 @@ public class Rect {
 	public void setHeight(int height) {
 		this.height = height;
 	}
+	public boolean isPoint() {
+		return ((width < 1) && (height < 1));
+	}
 		
 }

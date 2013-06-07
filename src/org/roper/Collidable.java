@@ -8,6 +8,7 @@ public class Collidable {
 	World world;
 	
 	private Rect me;
+	private boolean isPoint;
 	
 	public Collidable() {
 		world = null;
@@ -18,6 +19,8 @@ public class Collidable {
 	void init(World collidingWorld, Rect myRect) {
 		me = myRect;
 		world = collidingWorld;
+		
+		isPoint = me.isPoint();
 		
 	}
 	
@@ -88,7 +91,13 @@ public class Collidable {
 		return getCollision(tempVec, null);
 	}
 
-	Collision getCollision(Vec where, Vec dWhere) {		
+	Collision getCollision(Vec where, Vec dWhere) {
+		//pointcollission?
+		if (isPoint) {
+			boolean val = world.getBackground().isSolid(where);
+			return new Collision(val, val, val, val);
+		}
+		
 		//which borders to check?
 		//...
 		boolean right  = false, 
