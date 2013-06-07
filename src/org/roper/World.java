@@ -7,10 +7,12 @@ public class World implements IGameObject {
 	
 	Sprite background;
 	ArrayList<Sprite> sprites;
+	ArrayList<Rope> ropes;
 	
 	public World() {
 		//all these will be drawn in game's paint()
 		sprites = new ArrayList<Sprite>();
+		ropes = new ArrayList<Rope>();
 		
 		background = new Sprite();
 	}

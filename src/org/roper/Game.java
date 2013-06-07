@@ -43,11 +43,13 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 			    System.exit(0);
 			  }
 			});
+		
+		
 		world.init();
 		
 
-		player = new Player(world);
-		player.init();		
+		player = new Player();
+		player.init(world);		
 		player.setParent(this);
 		addKeyListener(player);		
 		children.add(player);
@@ -146,6 +148,16 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 			
 			g.drawImage(i.img, (int) i.pos.x, (int) i.pos.y, this);			
 		}
+		
+		for (Rope r: world.ropes) {
+			//TODO: put killme in all objects from children???
+			if (r.killMe) {
+				children.remove(r);
+				world.ropes.remove(r);
+				//TODO! this causes errors! //XXX
+			} else
+				g.drawLine((int)r.owner.pos.x, (int)r.owner.pos.y, (int)r.end.x, (int)r.end.y);			
+		}
 	}
 	
 	
@@ -161,7 +173,7 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 	@Override
 	public void mouseClicked(MouseEvent evt) {
 		System.out.print(""+evt.getX()+"; "+evt.getY());
-		System.out.println(""+world.getBackground().isBlack(new Vec(evt.getX(), evt.getY())));
+		System.out.println(""+world.getBackground().isSolid(new Vec(evt.getX(), evt.getY())));
 		
 	}
 
@@ -194,6 +206,20 @@ public class Game extends Frame implements IGameObject, Runnable, MouseListener 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public void addChild(IGameObject it) {
+		children.add(it);
+		
+	}
+
+
+
+	public void removeChild(IGameObject it) {
+		children.remove(it);
 		
 	}
 	

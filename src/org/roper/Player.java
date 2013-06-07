@@ -6,37 +6,43 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 
-public class Player implements IGameObject, KeyListener {
+public class Player extends Collidable implements IGameObject, KeyListener {
 	final float MSPEED  = 5.0f;
 	final float GRAVITY = 0.9f;
 	final float JSPEED  = -17.0f;
-	
-	
-	Vec pos;
-	Vec dPos;
-	
-	World world;
+		
 	
 	Sprite sprite;
 	
 	private Game parent;
 	
-	public Player(World world) {
+	public Player() {
+		super();		
 		sprite = null;
-		this.world = world;
 		parent = null;
 	}
 	
+	
 	@Override
-	public void init() {
+	public void init() { //TODO; use constructor to set world... clean this up... only one init!
 		pos = new Vec(40, 40);
 		dPos = new Vec();
-		
-		
 		sprite = new Sprite();
 		sprite.load("share/bild2.jpg"); 
+	}
+	
+	
+	public void init(World pworld) {
+		init();
+		
+		
+		
+		super.init(pworld, sprite.getRect());
+		
 		
 		world.sprites.add(sprite);
+		
+		
 		
 				
 	}
@@ -54,125 +60,12 @@ public class Player implements IGameObject, KeyListener {
 	@Override
 	public void update() {
 		
-		
+		//TODO: put in doPhysics?
 		dPos.y += GRAVITY; 	
 		
-		//hint: to change precision divide k_end by p and multiply  NdPos by p
+		doPhysics();
 		
-		Vec NdPos = dPos.normalize();
-		
-		//k * NdPos =: tempVec
-		int k = 0;
-		int k_end = (int) (dPos.abs()+1.0f);
-				
-		
-		Vec tempVec;
-		
-		
-		
-		boolean notThereYet = true;
-		while (notThereYet) {
-			tempVec = pos.add(NdPos);
-			k++;						
-			if (k == k_end) {
-				notThereYet = false;
-				
-			} else {
-				 Collision col = getCollision(tempVec, NdPos);
-			
-				
-				boolean mayMove = false;
-				
-				if (col.vertical()) { //dPos.y > 0   <=> jumping 
-					NdPos.y = 0.0f;
-					dPos.y = 0.0f; //brake as I'm on the floor
-				} else
-					mayMove = true;
-				
-				
-				
-			
-				if (col.horizontal()) 					
-					NdPos.x = 0.0f;					
-				else
-					mayMove = true;
-					 
-			
-				if (mayMove) 
-					pos = pos.add(NdPos);
-				else
-					notThereYet = false;		
-				
-			} 
-					
-			
-		
-		}
-		
-		//if (colliding) 
-			//pos = pos.add(NdPos.multiply(-3));
-		
-
 		sprite.pos = pos;
-	}
-	
-	private Collision getCollision(Vec tempVec) {
-		return getCollision(tempVec, null);
-	}
-
-	private Collision getCollision(Vec where, Vec dWhere) {		
-		//which borders to check?
-		//...
-		boolean right  = false, 
-				left   = false,
-				top    = false,
-				bottom = false;
-		boolean checkAll = (dWhere == null);
-		if (dWhere == null)
-			dWhere = new Vec();
-		
-		if (checkAll || (dWhere.x > 0.0f)) {
-			right = collisionCheckLine(
-					where.add(sprite.getWidth(), 0.0f),
-					where.add(sprite.getWidth(), sprite.getHeight()) );
-		}
-		
-		if (checkAll || (dWhere.x < 0.0f)) {
-			left  = collisionCheckLine(
-					where,
-					where.add(0.0f, sprite.getHeight()) );
-		}
-		
-		if (checkAll || (dWhere.y < 0.0f)) {
-			top   = collisionCheckLine(
-					where,
-					where.add(sprite.getWidth(), 0.0f) );
-		}
-		
-		if (checkAll || (dWhere.y > 0.0f)) {
-			bottom = collisionCheckLine(
-					where.add(0.0f, sprite.getHeight()),
-					where.add(sprite.getWidth(), sprite.getHeight()) );
-		}
-		
-		return new Collision(top, bottom, left, right);
-	}
-
-	private boolean collisionCheckLine(Vec start, Vec end) {
-		Vec step = end.subtract(start);
-		int times = (int) step.abs();
-		step = step.normalize();
-	
-		start = start.add(step);
-		
-		for (int i = 1; i < times; i++) {	
-			
-			if (world.getBackground().isBlack(start))
-				return true;
-			start = start.add(step);
-		}
-				
-		return false;
 	}
 
 	@Override
@@ -195,6 +88,25 @@ public class Player implements IGameObject, KeyListener {
 		if ((evt.getKeyCode() == KeyEvent.VK_UP) && isOnGround() ) 
 			dPos.y = JSPEED;
 		
+		if ((evt.getKeyCode() == KeyEvent.VK_SPACE) ) {//rope!
+			Rope r = new Rope(new Vec(1.0f, 1.0f), this, world);
+			world.ropes.add(r);
+			parent.addChild(r);
+			
+		}
+		
+		
+		//TODO: for debug only: del all ropes...
+		if ((evt.getKeyCode() == KeyEvent.VK_D) ) {//rope!
+			for (Rope r: world.ropes){
+				parent.removeChild(r);
+				r = null;
+			}
+			world.ropes.clear();
+			
+		}
+			
+		
 	}
 
 	@Override
@@ -211,7 +123,9 @@ public class Player implements IGameObject, KeyListener {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+
+
 	
 	
 }

@@ -73,7 +73,7 @@ public class Sprite {
 		return ( (rawByte[i] == 0) && (rawByte[i+1] == 0) && (rawByte[i+2] == 0) );
 	}
 
-	public boolean isBlack(Vec it) {		
+	public boolean isSolid(Vec it) {		
 		return isSolid((int) it.x, (int) it.y);
 	}
 	
@@ -104,4 +104,13 @@ public class Sprite {
 		
 	}
 
+	public Rect getRect() {
+		Rect result = new Rect();
+		result.height = getHeight();
+		result.width  = getWidth();		
+		
+		return result;
+	}
+
 }
+
