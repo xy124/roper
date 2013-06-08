@@ -1,5 +1,6 @@
 package org.roper;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,13 +68,14 @@ public class Rope extends Collidable implements IGameObject {
 			doPhysics();
 
 			//one step further to be on solid with rope
-			pos = pos.add(dPos.normalize());
+			//pos = pos.add(dPos.normalize());
 
 			//next step wuold be a collission?
 			
 			len = (int) (owner.pos.subtract(pos).abs());
 			if (world.background.isSolid(pos)) {
-				isShooting = false;					
+				isShooting = false;	
+				System.out.println("rope found fixpoint");
 			} else {		
 							
 				if (len > maxRopeLen) {
@@ -92,8 +94,12 @@ public class Rope extends Collidable implements IGameObject {
 		//System.out.println("Time draw rope:"+System.currentTimeMillis());
 		
 		//low: maybe put this in extern paint function
-		g.drawLine((int)owner.pos.x, (int)owner.pos.y, (int)pos.x, (int)pos.y);
+		g.setColor(Color.MAGENTA);
 		
+		//draw it thicker
+		g.drawLine((int)owner.pos.x, (int)owner.pos.y, (int)pos.x, (int)pos.y);
+		g.drawLine((int)owner.pos.x-1, (int)owner.pos.y-1, (int)pos.x-1, (int)pos.y-1);
+		g.drawLine((int)owner.pos.x+1, (int)owner.pos.y+1, (int)pos.x+1, (int)pos.y+1);
 		
 	}
 
